@@ -22,7 +22,7 @@ State backend	S3 + DynamoDB	Standard Terraform remote backend pattern; versionin
 VCS	GitHub	Source of truth for both Jenkins and Terraform code
 # 4. Part I — Remote State Backend (Implemented via AWS Console)
 ## S3 Bucket
-Name: project2-terraform-state-jithendra01
+Name: tf-remote-bucket123
 Region: us-east-1
 Versioning: Enabled (protects against state corruption/overwrites)
 Public access: fully blocked (default)
@@ -31,7 +31,7 @@ Name: terraform-locks
 Partition key: LockID (String) — required exact name for Terraform's S3 backend to use it as a lock table
 Billing mode: On-demand
 ## IAM User
-Name: terraform-jenkins-user
+Name: user1
 Access type: Programmatic (Access Key ID + Secret Access Key)
 Policies attached: AmazonEC2FullAccess, AmazonVPCFullAccess, AmazonRDSFullAccess, AmazonS3FullAccess, AmazonDynamoDBFullAccess, IAMReadOnlyAccess
 # 5. Part III — 2-Tier Architecture (Implemented via Terraform)
@@ -59,6 +59,8 @@ AWS_SECRET_ACCESS_KEY	Secret text	Authenticates Terraform to AWS
 db_password	Secret text	Injected as TF_VAR_db_password for the RDS master password
 Pipeline Job
 Type: Pipeline
+before running pipeline make sure you install terraform plugin in jenkins and add terraform tool under
+manage jenkins and add aws access and secerte keys and rds password under the credential section in jenkins.
 Trigger: Poll SCM, schedule H/5 * * * * (checks GitHub every 5 minutes)
 Definition: Pipeline script from SCM (Git), reading Jenkinsfile from the repo root, branch main
 Pipeline Stages (Jenkinsfile)
