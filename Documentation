@@ -1,4 +1,4 @@
-# *Project Documentation — AWS 2-Tier Architecture via Terraform + Jenkins*
+# **Project Documentation — AWS 2-Tier Architecture via Terraform + Jenkins**
 == 1. Objective
 Deploy a highly available 2-tier AWS architecture (Web Tier + Database Tier), fully automated with Infrastructure as Code (Terraform) and a CI/CD pipeline (Jenkins), using remote state management (S3 + DynamoDB) for team-safe, locked Terraform operations.
 
