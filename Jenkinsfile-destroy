@@ -1,0 +1,52 @@
+pipeline {
+    agent any
+
+    tools {
+        terraform 'terraform'
+    }
+
+    environment {
+        AWS_ACCESS_KEY_ID     = credentials('AWS_ACCESS_KEY_ID')
+        AWS_SECRET_ACCESS_KEY = credentials('AWS_SECRET_ACCESS_KEY')
+        TF_VAR_db_password    = credentials('db_password')
+    }
+
+    stages {
+
+        stage('Checkout Code') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Terraform Init') {
+            steps {
+                sh 'terraform init -reconfigure'
+            }
+        }
+
+        stage('Check Terraform State') {
+            steps {
+                sh 'terraform state list'
+            }
+        }
+
+        stage('Terraform Destroy Plan') {
+            steps {
+                sh 'terraform plan -destroy'
+            }
+        }
+
+        stage('Destroy Approval') {
+            steps {
+                input message: 'Destroy all Terraform-managed resources?', ok: 'Destroy'
+            }
+        }
+
+        stage('Terraform Destroy') {
+            steps {
+                sh 'terraform destroy -auto-approve'
+            }
+        }
+    }
+}
