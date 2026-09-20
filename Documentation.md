@@ -5,13 +5,13 @@ Deploy a highly available 2-tier AWS architecture (Web Tier + Database Tier), fu
 # 2. Target Architecture
 See docs/architecture.svg.
 
-## 1 Custom VPC (10.0.0.0/16)
-## 2 Public Subnets (one per AZ) — host the web tier
-## 2 Private Subnets (one per AZ) — host the database tier
-## Internet Gateway attached to the VPC, routed from the public route table only
-## 2 EC2 instances (Apache) in the public subnets, each behind its own security group allowing HTTP (80) and SSH (22)
-## 1 RDS MySQL instance (Multi-AZ) in the private subnets, reachable only on port 3306 from the web tier's security group — not from the public internet
-##Terraform remote state stored in an S3 bucket (versioned) with a DynamoDB table for state locking, preventing concurrent terraform apply runs from corrupting state
+- 1 Custom VPC (10.0.0.0/16)
+- 2 Public Subnets (one per AZ) — host the web tier
+- 2 Private Subnets (one per AZ) — host the database tier
+Internet Gateway attached to the VPC, routed from the public route table only
+- 2 EC2 instances (Apache) in the public subnets, each behind its own security group allowing HTTP (80) and SSH (22)
+- 1 RDS MySQL instance (Multi-AZ) in the private subnets, reachable only on port 3306 from the web tier's security group — not from the public internet
+Terraform remote state stored in an S3 bucket (versioned) with a DynamoDB table for state locking, preventing concurrent terraform apply runs from corrupting state
 # 3. Target Technology Stack
 Component	Choice	Reason
 IaC tool	Terraform	Declarative, widely adopted, strong AWS provider support
