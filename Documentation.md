@@ -5,14 +5,14 @@ Deploy a highly available 2-tier AWS architecture (Web Tier + Database Tier), fu
 # 2. Target Architecture
 See docs/architecture.svg.
 
-Custom VPC (10.0.0.0/16)
-2 Public Subnets (one per AZ) — host the web tier
-2 Private Subnets (one per AZ) — host the database tier
-Internet Gateway attached to the VPC, routed from the public route table only
-2 EC2 instances (Apache) in the public subnets, each behind its own security group allowing HTTP (80) and SSH (22)
-1 RDS MySQL instance (Multi-AZ) in the private subnets, reachable only on port 3306 from the web tier's security group — not from the public internet
-Terraform remote state stored in an S3 bucket (versioned) with a DynamoDB table for state locking, preventing concurrent terraform apply runs from corrupting state
-3. Target Technology Stack
+## 1 Custom VPC (10.0.0.0/16)
+## 2 Public Subnets (one per AZ) — host the web tier
+## 2 Private Subnets (one per AZ) — host the database tier
+## Internet Gateway attached to the VPC, routed from the public route table only
+## 2 EC2 instances (Apache) in the public subnets, each behind its own security group allowing HTTP (80) and SSH (22)
+## 1 RDS MySQL instance (Multi-AZ) in the private subnets, reachable only on port 3306 from the web tier's security group — not from the public internet
+##Terraform remote state stored in an S3 bucket (versioned) with a DynamoDB table for state locking, preventing concurrent terraform apply runs from corrupting state
+# 3. Target Technology Stack
 Component	Choice	Reason
 IaC tool	Terraform	Declarative, widely adopted, strong AWS provider support
 CI/CD	Jenkins	Free, self-hosted, flexible pipeline-as-code
@@ -20,21 +20,21 @@ Compute	EC2 (Amazon Linux 2023)	Free-tier eligible, simple web server hosting
 Database	RDS MySQL	Managed database, Multi-AZ for high availability
 State backend	S3 + DynamoDB	Standard Terraform remote backend pattern; versioning + locking
 VCS	GitHub	Source of truth for both Jenkins and Terraform code
-4. Part I — Remote State Backend (Implemented via AWS Console)
-S3 Bucket
+# 4. Part I — Remote State Backend (Implemented via AWS Console)
+## S3 Bucket
 Name: project2-terraform-state-jithendra01
 Region: us-east-1
 Versioning: Enabled (protects against state corruption/overwrites)
 Public access: fully blocked (default)
-DynamoDB Table
+## DynamoDB Table
 Name: terraform-locks
 Partition key: LockID (String) — required exact name for Terraform's S3 backend to use it as a lock table
 Billing mode: On-demand
-IAM User
+## IAM User
 Name: terraform-jenkins-user
 Access type: Programmatic (Access Key ID + Secret Access Key)
 Policies attached: AmazonEC2FullAccess, AmazonVPCFullAccess, AmazonRDSFullAccess, AmazonS3FullAccess, AmazonDynamoDBFullAccess, IAMReadOnlyAccess
-5. Part III — 2-Tier Architecture (Implemented via Terraform)
+# 5. Part III — 2-Tier Architecture (Implemented via Terraform)
 Terraform code lives at the repo root:
 
 provider.tf — AWS provider configuration
@@ -47,7 +47,7 @@ rds.tf — RDS subnet group + MySQL instance (Multi-AZ)
 outputs.tf — exposes web server public IPs and RDS endpoint
 Resources created (18 total, per terraform plan): VPC, Internet Gateway, 4 subnets, 2 route tables, 4 route table associations, 2 security groups, 2 EC2 instances, 1 DB subnet group, 1 RDS instance.
 
-6. Part II — Jenkins Pipeline
+# 6. Part II — Jenkins Pipeline
 Jenkins Server Setup
 EC2 instance (t2.medium, Amazon Linux 2023) in the default VPC
 Installed via user_data: Java 17, Jenkins, Terraform 1.9.0, AWS CLI
@@ -68,18 +68,18 @@ Terraform Init — connects to the S3/DynamoDB backend, installs providers
 Terraform Plan — generates and saves an execution plan (tfplan)
 Approval — pipeline pauses (input step) until a human clicks Apply
 Terraform Apply — applies the saved plan, provisioning all resources
-7. Issues Encountered & Fixes
+# 7. Issues Encountered & Fixes
 Issue	Root Cause	Fix
 terraform init failed with "S3 bucket does not exist"	backend.tf had a typo in the bucket name (tfstate vs terraform-state)	Corrected the bucket name in backend.tf to match the actual S3 bucket exactly, committed and pushed
 Jenkins pipeline needed manual confirmation before provisioning	By design — terraform apply should never run unattended in a learning/production environment without review	Added an input step in the Jenkinsfile between Plan and Apply
-8. Verification
+# 8. Verification
 terraform plan showed 18 to add, 0 to change, 0 to destroy before every apply
 After apply, confirmed in AWS Console:
 VPC with 4 subnets across 2 AZs
 2 EC2 instances in running state, in different AZs
 RDS instance in available state, Multi-AZ enabled, not publicly accessible
 Verified pipeline outputs: web_a_public_ip, web_b_public_ip, rds_endpoint
-9. Screenshots
+# 9. Screenshots
 Add these to docs/screenshots/ and reference them here:
 
  S3 bucket with versioning enabled
@@ -89,7 +89,7 @@ Add these to docs/screenshots/ and reference them here:
  AWS Console — VPC resource map
  AWS Console — EC2 instances running
  AWS Console — RDS instance available
-10. Cleanup
+# 10. Cleanup
 To avoid ongoing AWS charges after the project is reviewed:
 
 terraform destroy
@@ -100,7 +100,7 @@ Delete the jenkins-sg security group
 Empty and delete the S3 state bucket
 Delete the DynamoDB terraform-locks table
 Delete the terraform-jenkins-user IAM user (and its access keys)
-11. Lessons Learned
+# 11. Lessons Learned
 Terraform's S3 backend requires the bucket name to match exactly — even a small naming inconsistency (e.g. tfstate vs terraform-state) causes terraform init to fail outright.
 A manual approval gate (input step) in the Jenkins pipeline is a simple but effective safeguard against accidentally applying infrastructure changes without review.
 Keeping the database tier in private subnets with no internet route, and restricting its security group to only accept traffic from the web tier's security group (rather than a CIDR range), is a stronger and more maintainable isolation pattern than IP-based rules.
