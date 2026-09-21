@@ -77,9 +77,9 @@ Jenkins pipeline needed manual confirmation before provisioning	By design — te
 # 8. Verification
 terraform plan showed 18 to add, 0 to change, 0 to destroy before every apply
 After apply, confirmed in AWS Console:
-VPC with 4 subnets across 2 AZs
-2 EC2 instances in running state, in different AZs
-RDS instance in available state, Multi-AZ enabled, not publicly accessible
+- VPC with 4 subnets across 2 AZs
+- 2 EC2 instances in running state, in different AZs
+- RDS instance in available state, Multi-AZ enabled, not publicly accessible
 Verified pipeline outputs: web_a_public_ip, web_b_public_ip, rds_endpoint
 # 9. Screenshots
 Add these to docs/screenshots/ and reference them here:
