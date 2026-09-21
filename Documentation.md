@@ -55,9 +55,10 @@ Security group allows inbound SSH (22) and Jenkins UI (8080) from the administra
 Credentials configured in Jenkins
 |Credential ID|	Type	|Purpose
 |----------------|------------------|
-|AWS_ACCESS_KEY_ID	|Secret text	|Authenticates Terraform to AWS
-|AWS_SECRET_ACCESS_KEY	|Secret text	|Authenticates Terraform to AWS
-|db_password	|Secret text	|Injected as TF_VAR_db_password for the RDS master password
+|AWS_ACCESS_KEY_ID	|Secret text	|Authenticates Terraform to AWS|
+|AWS_SECRET_ACCESS_KEY	|Secret text	|Authenticates Terraform to AWS|
+|db_password	|Secret text	|Injected as TF_VAR_db_password for the RDS master password|
+
 Pipeline Job
 Type: Pipeline
 before running pipeline make sure you install terraform plugin in jenkins and add terraform tool under
