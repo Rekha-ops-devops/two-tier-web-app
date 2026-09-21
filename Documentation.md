@@ -103,7 +103,7 @@ Empty and delete the S3 state bucket
 Delete the DynamoDB terraform-locks table
 Delete the terraform-jenkins-user IAM user (and its access keys)
 # 11. Lessons Learned
-Terraform's S3 backend requires the bucket name to match exactly — even a small naming inconsistency (e.g. tfstate vs terraform-state) causes terraform init to fail outright.
-A manual approval gate (input step) in the Jenkins pipeline is a simple but effective safeguard against accidentally applying infrastructure changes without review.
-Keeping the database tier in private subnets with no internet route, and restricting its security group to only accept traffic from the web tier's security group (rather than a CIDR range), is a stronger and more maintainable isolation pattern than IP-based rules.
-skip_final_snapshot = true on the RDS instance was a deliberate choice for this learning project to make terraform destroy fast and clean; in production this would be set to false to protect against accidental data loss.
+- Terraform's S3 backend requires the bucket name to match exactly — even a small naming inconsistency (e.g. tfstate vs terraform-state) causes terraform init to fail outright.
+- A manual approval gate (input step) in the Jenkins pipeline is a simple but effective safeguard against accidentally applying infrastructure changes without review.
+- Keeping the database tier in private subnets with no internet route, and restricting its security group to only accept traffic from the web tier's security group (rather than a CIDR range), is a stronger and more maintainable isolation pattern than IP-based rules.
+- skip_final_snapshot = true on the RDS instance was a deliberate choice for this learning project to make terraform destroy fast and clean; in production this would be set to false to protect against accidental data loss.
