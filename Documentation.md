@@ -59,7 +59,7 @@ Credentials configured in Jenkins
 |AWS_SECRET_ACCESS_KEY	|Secret text	|Authenticates Terraform to AWS|
 |db_password	|Secret text	|Injected as TF_VAR_db_password for the RDS master password|
 
-Pipeline Job
+- Pipeline Job
 Type: Pipeline
 before running pipeline make sure you install terraform plugin in jenkins and add terraform tool under
 manage jenkins and add aws access and secerte keys and rds password under the credential section in jenkins.
