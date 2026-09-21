@@ -53,10 +53,11 @@ EC2 instance (t2.medium, Amazon Linux 2023) in the default VPC
 Installed via user_data: Java 17, Jenkins, Terraform 1.9.0, AWS CLI
 Security group allows inbound SSH (22) and Jenkins UI (8080) from the administrator's IP
 Credentials configured in Jenkins
-Credential ID	Type	Purpose
-AWS_ACCESS_KEY_ID	Secret text	Authenticates Terraform to AWS
-AWS_SECRET_ACCESS_KEY	Secret text	Authenticates Terraform to AWS
-db_password	Secret text	Injected as TF_VAR_db_password for the RDS master password
+|Credential ID|	Type	|Purpose
+|----------------|------------------|
+|AWS_ACCESS_KEY_ID	|Secret text	|Authenticates Terraform to AWS
+|AWS_SECRET_ACCESS_KEY	|Secret text	|Authenticates Terraform to AWS
+|db_password	|Secret text	|Injected as TF_VAR_db_password for the RDS master password
 Pipeline Job
 Type: Pipeline
 before running pipeline make sure you install terraform plugin in jenkins and add terraform tool under
@@ -106,4 +107,4 @@ Delete the terraform-jenkins-user IAM user (and its access keys)
 - Terraform's S3 backend requires the bucket name to match exactly — even a small naming inconsistency (e.g. tfstate vs terraform-state) causes terraform init to fail outright.
 - A manual approval gate (input step) in the Jenkins pipeline is a simple but effective safeguard against accidentally applying infrastructure changes without review.
 - Keeping the database tier in private subnets with no internet route, and restricting its security group to only accept traffic from the web tier's security group (rather than a CIDR range), is a stronger and more maintainable isolation pattern than IP-based rules.
-- skip_final_snapshot = true on the RDS instance was a deliberate choice for this learning project to make terraform destroy fast and clean; in production this would be set to false to protect against accidental data loss.
+- skip_final_snapshot = true on the RDS instance was a deliberate choice for this learning project to make terraform destroy fast and clean; in production this would be set to false to protect against accidental data loss
